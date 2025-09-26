@@ -276,7 +276,11 @@
                 customerInfo: urlParams.get('customerInfo') || '',
                 totalBoxes: urlParams.get('totalBoxes') || '',
                 deliveryMethod: urlParams.get('deliveryMethod') || '',
-                products: urlParams.get('products') || ''
+                // Nhận từng list riêng biệt
+                productCodes: urlParams.get('productCodes') || '', // Mã cây: code1,code2,code3
+                productTypes: urlParams.get('productTypes') || '', // Loại cây: type1,type2,type3  
+                productQuantities: urlParams.get('productQuantities') || '', // Số lượng: qty1,qty2,qty3
+                productNotes: urlParams.get('productNotes') || '' // Ghi chú: note1,note2,note3
             };
         }
         
@@ -289,25 +293,30 @@
             document.getElementById('total-boxes').textContent = params.totalBoxes;
             document.getElementById('delivery-method').textContent = params.deliveryMethod;
             
+            // Xử lý danh sách sản phẩm từ các list riêng biệt
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
             
-            if (params.products) {
-                const products = params.products.split(';');
-                products.forEach(product => {
-                    const [code, type, quantity, note] = product.split(',');
-                    if (code && type && quantity) {
-                        const productItem = document.createElement('div');
-                        productItem.className = 'product-item';
-                        productItem.innerHTML = `
-                            <div>${code}</div>
-                            <div>${type}</div>
-                            <div>${quantity}</div>
-                            <div>${note || '-'}</div>
-                        `;
-                        productList.appendChild(productItem);
-                    }
-                });
+            if (params.productCodes) {
+                const codes = params.productCodes.split(',');
+                const types = params.productTypes ? params.productTypes.split(',') : [];
+                const quantities = params.productQuantities ? params.productQuantities.split(',') : [];
+                const notes = params.productNotes ? params.productNotes.split(',') : [];
+                
+                // Lấy số lượng item lớn nhất
+                const maxItems = Math.max(codes.length, types.length, quantities.length, notes.length);
+                
+                for (let i = 0; i < maxItems; i++) {
+                    const productItem = document.createElement('div');
+                    productItem.className = 'product-item';
+                    productItem.innerHTML = `
+                        <div>${codes[i] || ''}</div>
+                        <div>${types[i] || ''}</div>
+                        <div>${quantities[i] || ''}</div>
+                        <div>${notes[i] || '-'}</div>
+                    `;
+                    productList.appendChild(productItem);
+                }
             }
         }
         
