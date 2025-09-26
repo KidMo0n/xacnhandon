@@ -149,27 +149,27 @@
     <div class="receipt">
         <div class="header">
             <div class="title">PHIẾU XÁC NHẬN ĐƠN HÀNG</div>
-            <div class="date" id="order-date">24/9/2025</div>
+            <div class="date" id="order-date"></div>
         </div>
         
         <div class="info-row">
             <div class="label">Khách hàng:</div>
-            <div class="value" id="customer-name">CÔ ĐỨC</div>
+            <div class="value" id="customer-name"></div>
         </div>
         
         <div class="info-row">
             <div class="label">Thông tin:</div>
-            <div class="value" id="customer-info">KIM NGÂN - 0945292978 - HCM</div>
+            <div class="value" id="customer-info"></div>
         </div>
         
         <div class="info-row">
             <div class="label">Tổng số thùng:</div>
-            <div class="value" id="total-boxes">5 THÙNG (100 CÂY)</div>
+            <div class="value" id="total-boxes"></div>
         </div>
         
         <div class="info-row">
             <div class="label">Giao hàng:</div>
-            <div class="value" id="delivery-method">XE THÀNH BƯỞI</div>
+            <div class="value" id="delivery-method"></div>
         </div>
         
         <div class="products-title">CHI TIẾT ĐƠN HÀNG</div>
@@ -182,22 +182,11 @@
         </div>
         
         <div id="product-list">
-            <div class="product-item">
-                <div>2101-GC-12.03.25</div>
-                <div>A 1 VỎI</div>
-                <div>20</div>
-                <div>-</div>
-            </div>
-            <div class="product-item">
-                <div>V3-DL-25.02.25</div>
-                <div>A 1 VỎI</div>
-                <div>80</div>
-                <div>-</div>
-            </div>
+            <!-- Products will be loaded here -->
         </div>
         
         <div class="share-section">
-            <button class="share-btn" onclick="shareOrder()">CHIA SẺ ĐƠN HÀNG</button>
+            <button class="share-btn" onclick="shareOrder()">CHIA SẺ HÌNH ẢNH</button>
         </div>
     </div>
 
@@ -205,12 +194,12 @@
         function getUrlParams() {
             const urlParams = new URLSearchParams(window.location.search);
             return {
-                date: urlParams.get('date') || '24/9/2025',
-                customerName: urlParams.get('customerName') || 'CÔ ĐỨC',
-                customerInfo: urlParams.get('customerInfo') || 'KIM NGÂN - 0945292978 - HCM',
-                totalBoxes: urlParams.get('totalBoxes') || '5 THÙNG (100 CÂY)',
-                deliveryMethod: urlParams.get('deliveryMethod') || 'XE THÀNH BƯỞI',
-                products: urlParams.get('products') || '2101-GC-12.03.25,A 1 VỎI,20,-;V3-DL-25.02.25,A 1 VỎI,80,-'
+                date: urlParams.get('date') || '',
+                customerName: urlParams.get('customerName') || '',
+                customerInfo: urlParams.get('customerInfo') || '',
+                totalBoxes: urlParams.get('totalBoxes') || '',
+                deliveryMethod: urlParams.get('deliveryMethod') || '',
+                products: urlParams.get('products') || ''
             };
         }
         
@@ -246,34 +235,60 @@
         }
         
         function shareOrder() {
-            const params = getUrlParams();
-            const shareText = `PHIẾU XÁC NHẬN ĐƠN HÀNG
-Ngày: ${params.date}
-Khách hàng: ${params.customerName}
-Thông tin: ${params.customerInfo}
-Tổng số: ${params.totalBoxes}
-Giao hàng: ${params.deliveryMethod}
-
-Link xem chi tiết: ${window.location.href}`;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Xác nhận đơn hàng',
-                    text: shareText
-                });
+            // Tạo canvas để chuyển HTML thành hình ảnh
+            const receiptElement = document.querySelector('.receipt');
+            
+            // Sử dụng html2canvas library
+            if (typeof html2canvas === 'undefined') {
+                // Load html2canvas library dynamically
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = function() {
+                    captureAndShare();
+                };
+                document.head.appendChild(script);
             } else {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert('Đã sao chép thông tin đơn hàng!');
-                }).catch(() => {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = shareText;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    alert('Đã sao chép thông tin!');
-                });
+                captureAndShare();
             }
+        }
+        
+        function captureAndShare() {
+            const receiptElement = document.querySelector('.receipt');
+            
+            html2canvas(receiptElement, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                useCORS: true
+            }).then(canvas => {
+                // Chuyển canvas thành blob
+                canvas.toBlob(function(blob) {
+                    const file = new File([blob], 'don-hang.png', { type: 'image/png' });
+                    
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        // Chia sẻ hình ảnh qua Web Share API
+                        navigator.share({
+                            title: 'Phiếu xác nhận đơn hàng',
+                            text: 'Phiếu xác nhận đơn hàng',
+                            files: [file]
+                        });
+                    } else {
+                        // Fallback: Tạo link download
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'phieu-xac-nhan-don-hang.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                        alert('Đã tải xuống hình ảnh! Bạn có thể chia sẻ qua Zalo, Email, v.v.');
+                    }
+                }, 'image/png');
+            }).catch(err => {
+                console.error('Lỗi tạo hình ảnh:', err);
+                alert('Không thể tạo hình ảnh. Vui lòng thử lại.');
+            });
         }
         
         window.addEventListener('DOMContentLoaded', displayOrderInfo);
