@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Xác Nhận Đơn Hàng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        
+        .receipt {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid #000;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .date {
+            font-size: 14px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .info-row:last-of-type {
+            border-bottom: 2px solid #000;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+        }
+        
+        .label {
+            font-weight: bold;
+            width: 40%;
+        }
+        
+        .value {
+            width: 58%;
+            text-align: right;
+        }
+        
+        .products-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #000;
+        }
+        
+        .product-header {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 2fr;
+            gap: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .product-item {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 2fr;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .share-section {
+            margin-top: 25px;
+            text-align: center;
+            border-top: 2px solid #000;
+            padding-top: 20px;
+        }
+        
+        .share-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .share-btn:hover {
+            background: #333;
+        }
+        
+        @media (max-width: 480px) {
+            .receipt {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .value {
+                text-align: left;
+                width: 100%;
+            }
+            
+            .product-header,
+            .product-item {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+            
+            .product-header div,
+            .product-item div {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <div class="title">PHIẾU XÁC NHẬN ĐƠN HÀNG</div>
+            <div class="date" id="order-date">24/9/2025</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="label">Khách hàng:</div>
+            <div class="value" id="customer-name">CÔ ĐỨC</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="label">Thông tin:</div>
+            <div class="value" id="customer-info">KIM NGÂN - 0945292978 - HCM</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="label">Tổng số thùng:</div>
+            <div class="value" id="total-boxes">5 THÙNG (100 CÂY)</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="label">Giao hàng:</div>
+            <div class="value" id="delivery-method">XE THÀNH BƯỞI</div>
+        </div>
+        
+        <div class="products-title">CHI TIẾT ĐƠN HÀNG</div>
+        
+        <div class="product-header">
+            <div>MÃ CÂY</div>
+            <div>LOẠI CÂY</div>
+            <div>SL</div>
+            <div>GHI CHÚ</div>
+        </div>
+        
+        <div id="product-list">
+            <div class="product-item">
+                <div>2101-GC-12.03.25</div>
+                <div>A 1 VỎI</div>
+                <div>20</div>
+                <div>-</div>
+            </div>
+            <div class="product-item">
+                <div>V3-DL-25.02.25</div>
+                <div>A 1 VỎI</div>
+                <div>80</div>
+                <div>-</div>
+            </div>
+        </div>
+        
+        <div class="share-section">
+            <button class="share-btn" onclick="shareOrder()">CHIA SẺ ĐƠN HÀNG</button>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                date: urlParams.get('date') || '24/9/2025',
+                customerName: urlParams.get('customerName') || 'CÔ ĐỨC',
+                customerInfo: urlParams.get('customerInfo') || 'KIM NGÂN - 0945292978 - HCM',
+                totalBoxes: urlParams.get('totalBoxes') || '5 THÙNG (100 CÂY)',
+                deliveryMethod: urlParams.get('deliveryMethod') || 'XE THÀNH BƯỞI',
+                products: urlParams.get('products') || '2101-GC-12.03.25,A 1 VỎI,20,-;V3-DL-25.02.25,A 1 VỎI,80,-'
+            };
+        }
+        
+        function displayOrderInfo() {
+            const params = getUrlParams();
+            
+            document.getElementById('order-date').textContent = params.date;
+            document.getElementById('customer-name').textContent = params.customerName;
+            document.getElementById('customer-info').textContent = params.customerInfo;
+            document.getElementById('total-boxes').textContent = params.totalBoxes;
+            document.getElementById('delivery-method').textContent = params.deliveryMethod;
+            
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+            
+            if (params.products) {
+                const products = params.products.split(';');
+                products.forEach(product => {
+                    const [code, type, quantity, note] = product.split(',');
+                    if (code && type && quantity) {
+                        const productItem = document.createElement('div');
+                        productItem.className = 'product-item';
+                        productItem.innerHTML = `
+                            <div>${code}</div>
+                            <div>${type}</div>
+                            <div>${quantity}</div>
+                            <div>${note || '-'}</div>
+                        `;
+                        productList.appendChild(productItem);
+                    }
+                });
+            }
+        }
+        
+        function shareOrder() {
+            const params = getUrlParams();
+            const shareText = `PHIẾU XÁC NHẬN ĐƠN HÀNG
+Ngày: ${params.date}
+Khách hàng: ${params.customerName}
+Thông tin: ${params.customerInfo}
+Tổng số: ${params.totalBoxes}
+Giao hàng: ${params.deliveryMethod}
+
+Link xem chi tiết: ${window.location.href}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Xác nhận đơn hàng',
+                    text: shareText
+                });
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Đã sao chép thông tin đơn hàng!');
+                }).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = shareText;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('Đã sao chép thông tin!');
+                });
+            }
+        }
+        
+        window.addEventListener('DOMContentLoaded', displayOrderInfo);
+    </script>
+</body>
+</html>
