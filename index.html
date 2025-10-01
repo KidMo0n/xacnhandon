@@ -355,7 +355,34 @@
         function displayOrderInfo() {
             const params = getUrlParams();
             
-            document.getElementById('order-date').textContent = params.date;
+            // Chuyển đổi định dạng ngày từ MM/DD/YYYY sang DD/MM/YYYY
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                
+                // Kiểm tra nếu đã đúng định dạng DD/MM/YYYY (có ngày > 12)
+                const parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    const first = parseInt(parts[0]);
+                    const second = parseInt(parts[1]);
+                    
+                    // Nếu phần đầu > 12, đã là DD/MM/YYYY
+                    if (first > 12) {
+                        return dateStr;
+                    }
+                    
+                    // Nếu phần thứ hai > 12, chắc chắn là MM/DD/YYYY, cần đổi
+                    if (second > 12) {
+                        return `${parts[1]}/${parts[0]}/${parts[2]}`;
+                    }
+                    
+                    // Trường hợp애매한 (cả hai đều <= 12), giả sử là MM/DD/YYYY
+                    return `${parts[1]}/${parts[0]}/${parts[2]}`;
+                }
+                
+                return dateStr;
+            }
+            
+            document.getElementById('order-date').textContent = formatDate(params.date);
             document.getElementById('customer-name').textContent = params.customerName;
             document.getElementById('customer-info').textContent = params.customerInfo;
             document.getElementById('total-boxes').textContent = params.totalBoxes;
