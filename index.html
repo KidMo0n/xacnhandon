@@ -94,6 +94,14 @@
             margin-bottom: 12px;
         }
         
+        .product-header .mobile-only {
+            display: none;
+        }
+        
+        .product-header .desktop-only {
+            display: block;
+        }
+        
         .product-item {
             display: grid;
             grid-template-columns: 2fr 2fr 1fr 2fr;
@@ -177,6 +185,19 @@
                 font-size: 11px;
             }
             
+            .product-header .mobile-only {
+                display: block;
+            }
+            
+            .product-header .desktop-only {
+                display: none;
+            }
+            
+            .product-header div:nth-child(2),
+            .product-header div:nth-child(3) {
+                text-align: center;
+            }
+            
             .product-item {
                 display: grid;
                 grid-template-columns: 2.5fr 1fr 2fr;
@@ -193,6 +214,10 @@
             }
             
             .product-item div:nth-child(2) {
+                display: none;
+            }
+            
+            .product-item div:nth-child(3) {
                 text-align: center;
                 font-weight: bold;
                 background: #e8e8e8;
@@ -200,26 +225,24 @@
                 border-radius: 3px;
             }
             
-            .product-item div:nth-child(3) {
+            .product-item div:nth-child(4) {
                 color: #333;
                 font-size: 10px;
-            }
-            
-            .product-item div:nth-child(4) {
-                grid-column: 1 / -1;
-                color: #666;
-                font-size: 10px;
-                font-style: italic;
-                margin-top: 2px;
-                padding-left: 4px;
+                text-align: center;
             }
             
             .product-item div:nth-child(4):empty {
-                display: none;
+                opacity: 0.3;
             }
             
-            .product-item div:nth-child(4):not(:empty)::before {
-                content: "📝 ";
+            /* Thêm loại cây vào sau mã cây trên mobile */
+            .product-item div:nth-child(1)::after {
+                content: attr(data-type);
+                display: block;
+                font-weight: normal;
+                color: #666;
+                font-size: 10px;
+                margin-top: 2px;
             }
             
             .share-btn {
@@ -259,8 +282,12 @@
         <div class="products-title">CHI TIẾT ĐƠN HÀNG</div>
         
         <div class="product-header">
-            <div>MÃ CÂY / LOẠI</div>
-            <div>SL</div>
+            <div>MÃ CÂY</div>
+            <div>LOẠI CÂY</div>
+            <div>
+                <span class="desktop-only">SỐ LƯỢNG</span>
+                <span class="mobile-only">SL</span>
+            </div>
             <div>GHI CHÚ</div>
         </div>
         
@@ -321,11 +348,9 @@
                     const qty = quantities[i] || '';
                     const note = notes[i] || '';
                     
-                    // Ghép mã và loại vào 1 cột
-                    const codeAndType = code + (type ? '<br><span style="font-weight:normal;color:#666;font-size:10px;">' + type + '</span>' : '');
-                    
                     productItem.innerHTML = `
-                        <div>${codeAndType}</div>
+                        <div data-type="${type}">${code}</div>
+                        <div>${type}</div>
                         <div>${qty}</div>
                         <div>${note}</div>
                     `;
