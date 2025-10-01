@@ -157,7 +157,7 @@
                 margin-bottom: 12px;
             }
             
-            /* Mobile: Hiển thị từng sản phẩm như thẻ card */
+            /* Mobile: Hiển thị từng sản phẩm gọn hơn */
             .product-header {
                 display: none;
             }
@@ -165,54 +165,52 @@
             .product-item {
                 display: block;
                 border: 1px solid #ddd;
-                margin-bottom: 10px;
-                padding: 12px;
-                background: #f9f9f9;
+                margin-bottom: 8px;
+                padding: 10px;
+                background: #fafafa;
             }
             
             .product-item div {
-                margin-bottom: 6px;
-                font-size: 13px;
+                margin-bottom: 4px;
+                font-size: 12px;
+                line-height: 1.3;
             }
             
             .product-item div:nth-child(1) {
                 font-weight: bold;
                 color: #000;
-                font-size: 14px;
+                font-size: 13px;
+                margin-bottom: 3px;
             }
             
-            .product-item div:nth-child(1)::before {
-                content: "Mã: ";
-                font-weight: normal;
-                color: #666;
-                font-size: 12px;
-            }
-            
-            .product-item div:nth-child(2)::before {
-                content: "Loại: ";
-                font-weight: bold;
-                color: #666;
-                font-size: 12px;
+            .product-item div:nth-child(2) {
+                color: #333;
             }
             
             .product-item div:nth-child(3) {
                 font-weight: bold;
                 color: #000;
-                font-size: 16px;
+                font-size: 14px;
+                display: inline-block;
+                background: #e8e8e8;
+                padding: 2px 8px;
+                border-radius: 3px;
+                margin-top: 2px;
             }
             
             .product-item div:nth-child(3)::before {
-                content: "Số lượng: ";
+                content: "SL: ";
                 font-weight: normal;
-                color: #666;
-                font-size: 12px;
             }
             
-            .product-item div:nth-child(4)::before {
-                content: "Ghi chú: ";
-                font-weight: bold;
+            .product-item div:nth-child(4) {
                 color: #666;
-                font-size: 12px;
+                font-size: 11px;
+                font-style: italic;
+            }
+            
+            .product-item div:nth-child(4):not(:empty)::before {
+                content: "📝 ";
             }
             
             .share-btn {
@@ -340,12 +338,19 @@
         
         function captureAndShare() {
             const receiptElement = document.querySelector('.receipt');
+            const shareSection = document.querySelector('.share-section');
+            
+            // Ẩn nút chia sẻ trước khi chụp
+            shareSection.classList.add('hidden');
             
             html2canvas(receiptElement, {
                 scale: 2,
                 backgroundColor: '#ffffff',
                 useCORS: true
             }).then(canvas => {
+                // Hiện lại nút chia sẻ sau khi chụp
+                shareSection.classList.remove('hidden');
+                
                 // Chuyển canvas thành blob
                 canvas.toBlob(function(blob) {
                     const file = new File([blob], 'don-hang.png', { type: 'image/png' });
@@ -372,6 +377,8 @@
                     }
                 }, 'image/png');
             }).catch(err => {
+                // Hiện lại nút nếu có lỗi
+                shareSection.classList.remove('hidden');
                 console.error('Lỗi tạo hình ảnh:', err);
                 alert('Không thể tạo hình ảnh. Vui lòng thử lại.');
             });
