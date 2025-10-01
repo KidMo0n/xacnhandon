@@ -339,17 +339,29 @@
                 // Lấy số lượng item lớn nhất
                 const maxItems = Math.max(codes.length, types.length, quantities.length, notes.length);
                 
+                // Hàm rút gọn mã cây
+                function shortenCode(code) {
+                    if (!code) return '';
+                    // Nếu có dấu '-', lấy phần đầu tiên
+                    if (code.includes('-')) {
+                        return code.split('-')[0].trim();
+                    }
+                    // Nếu không có dấu '-', giữ nguyên
+                    return code.trim();
+                }
+                
                 for (let i = 0; i < maxItems; i++) {
                     const productItem = document.createElement('div');
                     productItem.className = 'product-item';
                     
                     const code = codes[i] || '';
+                    const shortCode = shortenCode(code);
                     const type = types[i] || '';
                     const qty = quantities[i] || '';
                     const note = notes[i] || '';
                     
                     productItem.innerHTML = `
-                        <div data-type="${type}">${code}</div>
+                        <div data-type="${type}" title="${code}">${shortCode}</div>
                         <div>${type}</div>
                         <div>${qty}</div>
                         <div>${note}</div>
