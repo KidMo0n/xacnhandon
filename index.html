@@ -138,6 +138,7 @@
         .product-item div:nth-child(4) {
             overflow-wrap: anywhere;
             hyphens: none;
+            text-align: center;
         }
         
         /* Hiển thị loại cây dưới mã cây */
@@ -267,6 +268,7 @@
             .product-item div:nth-child(4) {
                 overflow-wrap: anywhere;
                 hyphens: none;
+                text-align: center;
             }
             
             .product-item div:nth-child(4):empty {
@@ -400,7 +402,7 @@
                         return text.split('|||').map(s => s.trim()).filter(s => s);
                     }
                     
-                    // Pattern: " , " (khoảng trắng 2 bên)
+                    // Pattern: " , " (khoảng trắng 2 bên) - ƯU TIÊN CAO
                     if (text.includes(' , ')) {
                         return text.split(' , ').map(s => s.trim()).filter(s => s);
                     }
@@ -415,7 +417,7 @@
                         return text.split(' ,').map(s => s.trim()).filter(s => s);
                     }
                     
-                    // Pattern: "," (không khoảng trắng)
+                    // Pattern: "," (không khoảng trắng) - ƯU TIÊN THẤP
                     if (text.includes(',')) {
                         return text.split(',').map(s => s.trim()).filter(s => s);
                     }
@@ -428,22 +430,41 @@
                 const types = smartSplit(params.productTypes);
                 const quantities = smartSplit(params.productQuantities);
                 
-                // Xử lý ghi chú ĐẶC BIỆT: không filter rỗng vì cần giữ vị trí
+                // Xử lý ghi chú: Dựa vào số lượng sản phẩm để split đúng
                 let notes = [];
                 if (params.productNotes) {
                     const notesText = params.productNotes;
+                    const numProducts = codes.length;
                     
+                    // Thử split theo các pattern
                     if (notesText.includes('|||')) {
                         notes = notesText.split('|||').map(s => s.trim());
                     } else if (notesText.includes(' , ')) {
-                        notes = notesText.split(' , ').map(s => s.trim());
+                        // Pattern ưu tiên: " , "
+                        const tempNotes = notesText.split(' , ').map(s => s.trim());
+                        // Kiểm tra xem số lượng có khớp không
+                        if (tempNotes.length === numProducts) {
+                            notes = tempNotes;
+                        } else {
+                            // Không khớp, coi như 1 ghi chú duy nhất
+                            notes = [notesText.trim()];
+                        }
                     } else if (notesText.includes(', ')) {
-                        notes = notesText.split(', ').map(s => s.trim());
+                        const tempNotes = notesText.split(', ').map(s => s.trim());
+                        if (tempNotes.length === numProducts) {
+                            notes = tempNotes;
+                        } else {
+                            notes = [notesText.trim()];
+                        }
                     } else if (notesText.includes(' ,')) {
-                        notes = notesText.split(' ,').map(s => s.trim());
-                    } else if (notesText.includes(',')) {
-                        notes = notesText.split(',').map(s => s.trim());
+                        const tempNotes = notesText.split(' ,').map(s => s.trim());
+                        if (tempNotes.length === numProducts) {
+                            notes = tempNotes;
+                        } else {
+                            notes = [notesText.trim()];
+                        }
                     } else {
+                        // Không có pattern đặc biệt, coi như 1 ghi chú
                         notes = [notesText.trim()];
                     }
                 }
