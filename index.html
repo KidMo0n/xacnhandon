@@ -436,36 +436,37 @@
                     const notesText = params.productNotes;
                     const numProducts = codes.length;
                     
-                    // Thử split theo các pattern
+                    // Thử split theo các pattern - KHÔNG FILTER rỗng để giữ vị trí
                     if (notesText.includes('|||')) {
                         notes = notesText.split('|||').map(s => s.trim());
                     } else if (notesText.includes(' , ')) {
                         // Pattern ưu tiên: " , "
-                        const tempNotes = notesText.split(' , ').map(s => s.trim());
-                        // Kiểm tra xem số lượng có khớp không
-                        if (tempNotes.length === numProducts) {
-                            notes = tempNotes;
-                        } else {
-                            // Không khớp, coi như 1 ghi chú duy nhất
-                            notes = [notesText.trim()];
-                        }
+                        notes = notesText.split(' , ').map(s => s.trim());
                     } else if (notesText.includes(', ')) {
-                        const tempNotes = notesText.split(', ').map(s => s.trim());
-                        if (tempNotes.length === numProducts) {
-                            notes = tempNotes;
-                        } else {
-                            notes = [notesText.trim()];
-                        }
+                        notes = notesText.split(', ').map(s => s.trim());
                     } else if (notesText.includes(' ,')) {
-                        const tempNotes = notesText.split(' ,').map(s => s.trim());
-                        if (tempNotes.length === numProducts) {
-                            notes = tempNotes;
+                        notes = notesText.split(' ,').map(s => s.trim());
+                    } else {
+                        // Không có pattern đặc biệt
+                        // Thử split bằng "," và kiểm tra số lượng
+                        if (notesText.includes(',')) {
+                            const tempNotes = notesText.split(',').map(s => s.trim());
+                            // Chỉ split nếu số lượng khớp với số sản phẩm
+                            if (tempNotes.length === numProducts) {
+                                notes = tempNotes;
+                            } else {
+                                // Không khớp, giữ nguyên cả chuỗi
+                                notes = [notesText.trim()];
+                            }
                         } else {
+                            // Không có dấu phẩy, 1 ghi chú duy nhất
                             notes = [notesText.trim()];
                         }
-                    } else {
-                        // Không có pattern đặc biệt, coi như 1 ghi chú
-                        notes = [notesText.trim()];
+                    }
+                    
+                    // Đảm bảo số lượng ghi chú = số lượng sản phẩm
+                    while (notes.length < numProducts) {
+                        notes.push('');
                     }
                 }
                 
