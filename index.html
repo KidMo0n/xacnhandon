@@ -342,11 +342,11 @@
                 customerInfo: urlParams.get('customerInfo') || '',
                 totalBoxes: urlParams.get('totalBoxes') || '',
                 deliveryMethod: urlParams.get('deliveryMethod') || '',
-                // Nhận từng list riêng biệt
-                productCodes: urlParams.get('productCodes') || '', // Mã cây: code1,code2,code3
-                productTypes: urlParams.get('productTypes') || '', // Loại cây: type1,type2,type3  
-                productQuantities: urlParams.get('productQuantities') || '', // Số lượng: qty1,qty2,qty3
-                productNotes: urlParams.get('productNotes') || '' // Ghi chú: note1,note2,note3
+                // Nhận từng list riêng biệt - sử dụng ||| làm ký tự phân tách
+                productCodes: urlParams.get('productCodes') || '',
+                productTypes: urlParams.get('productTypes') || '',
+                productQuantities: urlParams.get('productQuantities') || '',
+                productNotes: urlParams.get('productNotes') || ''
             };
         }
         
@@ -391,10 +391,36 @@
             productList.innerHTML = '';
             
             if (params.productCodes) {
-                const codes = params.productCodes.split(',');
-                const types = params.productTypes ? params.productTypes.split(',') : [];
-                const quantities = params.productQuantities ? params.productQuantities.split(',') : [];
-                const notes = params.productNotes ? params.productNotes.split(',') : [];
+                // Phát hiện ký tự phân tách: nếu có |||, dùng |||, nếu không dùng " , " (có khoảng trắng)
+                let separator = params.productCodes.includes('|||') ? '|||' : ' , ';
+                
+                // Nếu không có " , ", thử dấu phẩy thông thường
+                if (!params.productCodes.includes(' , ') && !params.productCodes.includes('|||')) {
+                    separator = ',';
+                }
+                
+                const codes = params.productCodes.split(separator).map(s => s.trim());
+                const types = params.productTypes ? params.productTypes.split(separator).map(s => s.trim()) : [];
+                const quantities = params.productQuantities ? params.productQuantities.split(separator).map(s => s.trim()) : [];
+                
+                // Xử lý ghi chú
+                let notes = [];
+                if (params.productNotes) {
+                    if (params.productNotes.includes('|||')) {
+                        notes = params.productNotes.split('|||').map(s => s.trim());
+                    } else if (params.productNotes.includes(' , ')) {
+                        notes = params.productNotes.split(' , ').map(s => s.trim());
+                    } else {
+                        const maxItems = codes.length;
+                        const allNotes = params.productNotes.split(',').map(n => n.trim());
+                        
+                        if (allNotes.length === maxItems) {
+                            notes = allNotes;
+                        } else {
+                            notes = [params.productNotes.trim()];
+                        }
+                    }
+                }
                 
                 // Lấy số lượng item lớn nhất
                 const maxItems = Math.max(codes.length, types.length, quantities.length, notes.length);
