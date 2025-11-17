@@ -391,34 +391,60 @@
             productList.innerHTML = '';
             
             if (params.productCodes) {
-                // Phát hiện ký tự phân tách: nếu có |||, dùng |||, nếu không dùng " , " (có khoảng trắng)
-                let separator = params.productCodes.includes('|||') ? '|||' : ' , ';
-                
-                // Nếu không có " , ", thử dấu phẩy thông thường
-                if (!params.productCodes.includes(' , ') && !params.productCodes.includes('|||')) {
-                    separator = ',';
+                // Hàm tự động phát hiện và split thông minh
+                function smartSplit(text) {
+                    if (!text) return [];
+                    
+                    // Thử các pattern phổ biến của AppSheet
+                    if (text.includes('|||')) {
+                        return text.split('|||').map(s => s.trim()).filter(s => s);
+                    }
+                    
+                    // Pattern: " , " (khoảng trắng 2 bên)
+                    if (text.includes(' , ')) {
+                        return text.split(' , ').map(s => s.trim()).filter(s => s);
+                    }
+                    
+                    // Pattern: ", " (khoảng trắng sau)
+                    if (text.includes(', ')) {
+                        return text.split(', ').map(s => s.trim()).filter(s => s);
+                    }
+                    
+                    // Pattern: " ," (khoảng trắng trước)
+                    if (text.includes(' ,')) {
+                        return text.split(' ,').map(s => s.trim()).filter(s => s);
+                    }
+                    
+                    // Pattern: "," (không khoảng trắng)
+                    if (text.includes(',')) {
+                        return text.split(',').map(s => s.trim()).filter(s => s);
+                    }
+                    
+                    // Không có dấu phẩy, trả về mảng 1 phần tử
+                    return [text.trim()].filter(s => s);
                 }
                 
-                const codes = params.productCodes.split(separator).map(s => s.trim());
-                const types = params.productTypes ? params.productTypes.split(separator).map(s => s.trim()) : [];
-                const quantities = params.productQuantities ? params.productQuantities.split(separator).map(s => s.trim()) : [];
+                const codes = smartSplit(params.productCodes);
+                const types = smartSplit(params.productTypes);
+                const quantities = smartSplit(params.productQuantities);
                 
-                // Xử lý ghi chú
+                // Xử lý ghi chú ĐẶC BIỆT: không filter rỗng vì cần giữ vị trí
                 let notes = [];
                 if (params.productNotes) {
-                    if (params.productNotes.includes('|||')) {
-                        notes = params.productNotes.split('|||').map(s => s.trim());
-                    } else if (params.productNotes.includes(' , ')) {
-                        notes = params.productNotes.split(' , ').map(s => s.trim());
+                    const notesText = params.productNotes;
+                    
+                    if (notesText.includes('|||')) {
+                        notes = notesText.split('|||').map(s => s.trim());
+                    } else if (notesText.includes(' , ')) {
+                        notes = notesText.split(' , ').map(s => s.trim());
+                    } else if (notesText.includes(', ')) {
+                        notes = notesText.split(', ').map(s => s.trim());
+                    } else if (notesText.includes(' ,')) {
+                        notes = notesText.split(' ,').map(s => s.trim());
+                    } else if (notesText.includes(',')) {
+                        notes = notesText.split(',').map(s => s.trim());
                     } else {
-                        const maxItems = codes.length;
-                        const allNotes = params.productNotes.split(',').map(n => n.trim());
-                        
-                        if (allNotes.length === maxItems) {
-                            notes = allNotes;
-                        } else {
-                            notes = [params.productNotes.trim()];
-                        }
+                        notes = [notesText.trim()];
                     }
                 }
                 
