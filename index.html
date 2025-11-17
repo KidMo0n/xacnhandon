@@ -138,6 +138,7 @@
         .product-item div:nth-child(4) {
             word-wrap: break-word;
             overflow-wrap: break-word;
+            text-align: center;
         }
         
         /* Hiển thị loại cây dưới mã cây */
@@ -269,6 +270,7 @@
                 font-size: 10px;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
+                text-align: center;
             }
             
             .product-item div:nth-child(4):empty {
@@ -396,10 +398,22 @@
                 const codes = params.productCodes.split(',');
                 const types = params.productTypes ? params.productTypes.split(',') : [];
                 const quantities = params.productQuantities ? params.productQuantities.split(',') : [];
-                const notes = params.productNotes ? params.productNotes.split(',') : [];
+                
+                // Xử lý ghi chú: có thể dùng || hoặc ,
+                let notes = [];
+                if (params.productNotes) {
+                    // Kiểm tra xem dùng || hay ,
+                    if (params.productNotes.includes('||')) {
+                        notes = params.productNotes.split('||');
+                    } else {
+                        notes = params.productNotes.split(',');
+                    }
+                    // Trim từng ghi chú
+                    notes = notes.map(note => note.trim());
+                }
                 
                 // Lấy số lượng item lớn nhất
-                const maxItems = Math.max(codes.length, types.length, quantities.length, notes.length);
+                const maxItems = Math.max(codes.length, types.length, quantities.length);
                 
                 // Hàm rút gọn mã cây
                 function shortenCode(code) {
@@ -420,7 +434,7 @@
                     const shortCode = shortenCode(code);
                     const type = types[i] || '';
                     const qty = quantities[i] || '';
-                    const note = notes[i] || '';
+                    const note = notes[i] ? notes[i].trim() : ''; // Trim để bỏ khoảng trắng thừa
                     
                     productItem.innerHTML = `
                         <div data-type="${type}" title="${code}">${shortCode}</div>
