@@ -426,24 +426,62 @@
                     return code.trim();
                 }
                 
+                // Thu thập tất cả sản phẩm
+                const products = [];
                 for (let i = 0; i < maxItems; i++) {
+                    const code = codes[i] ? codes[i].trim() : '';
+                    const shortCode = shortenCode(code);
+                    const type = types[i] ? types[i].trim() : '';
+                    const qty = quantities[i] ? quantities[i].trim() : '';
+                    const note = notes[i] ? notes[i].trim() : '';
+                    
+                    products.push({
+                        fullCode: code,
+                        shortCode: shortCode,
+                        type: type,
+                        quantity: qty,
+                        note: note
+                    });
+                }
+                
+                // Gộp các sản phẩm có cùng mã, loại và ghi chú
+                const mergedProducts = [];
+                const productMap = new Map();
+                
+                products.forEach(product => {
+                    // Tạo key duy nhất từ shortCode + type + note
+                    const key = `${product.shortCode}|||${product.type}|||${product.note}`;
+                    
+                    if (productMap.has(key)) {
+                        // Nếu đã tồn tại, cộng dồn số lượng
+                        const existing = productMap.get(key);
+                        const existingQty = parseFloat(existing.quantity) || 0;
+                        const newQty = parseFloat(product.quantity) || 0;
+                        existing.quantity = (existingQty + newQty).toString();
+                    } else {
+                        // Nếu chưa tồn tại, thêm mới
+                        productMap.set(key, { ...product });
+                    }
+                });
+                
+                // Chuyển Map thành Array
+                productMap.forEach(product => {
+                    mergedProducts.push(product);
+                });
+                
+                // Hiển thị sản phẩm đã gộp
+                mergedProducts.forEach(product => {
                     const productItem = document.createElement('div');
                     productItem.className = 'product-item';
                     
-                    const code = codes[i] || '';
-                    const shortCode = shortenCode(code);
-                    const type = types[i] || '';
-                    const qty = quantities[i] || '';
-                    const note = notes[i] ? notes[i].trim() : ''; // Trim để bỏ khoảng trắng thừa
-                    
                     productItem.innerHTML = `
-                        <div data-type="${type}" title="${code}">${shortCode}</div>
-                        <div>${type}</div>
-                        <div>${qty}</div>
-                        <div>${note}</div>
+                        <div data-type="${product.type}" title="${product.fullCode}">${product.shortCode}</div>
+                        <div>${product.type}</div>
+                        <div>${product.quantity}</div>
+                        <div>${product.note}</div>
                     `;
                     productList.appendChild(productItem);
-                }
+                });
             }
         }
         
