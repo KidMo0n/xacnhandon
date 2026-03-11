@@ -469,6 +469,48 @@
                     mergedProducts.push(product);
                 });
                 
+                // Tính tổng số thùng theo logic AppSheet
+                function calculateBoxes(type, quantity) {
+                    const qty = parseFloat(quantity) || 0;
+                    
+                    // Kiểm tra xem có <số> trong loại cây không
+                    const openBracket = type.indexOf('<');
+                    const closeBracket = type.indexOf('>');
+                    
+                    if (openBracket > -1 && closeBracket > openBracket) {
+                        // Lấy số trong <số>
+                        const divisionNumber = type.substring(openBracket + 1, closeBracket);
+                        const divisor = parseFloat(divisionNumber);
+                        if (!isNaN(divisor) && divisor > 0) {
+                            return Math.round(qty / divisor);
+                        }
+                    }
+                    
+                    // Nếu là "cành", chia 50
+                    if (type.toLowerCase().includes('cành')) {
+                        return Math.round(qty / 50);
+                    }
+                    
+                    // Mặc định chia 20
+                    return Math.round(qty / 20);
+                }
+                
+                // Tính tổng số thùng và tổng số lượng
+                let totalBoxes = 0;
+                let totalQuantity = 0;
+                
+                mergedProducts.forEach(product => {
+                    const boxes = calculateBoxes(product.type, product.quantity);
+                    totalBoxes += boxes;
+                    totalQuantity += parseFloat(product.quantity) || 0;
+                });
+                
+                // Cập nhật lại hiển thị tổng số thùng nếu cần
+                const totalBoxesElement = document.getElementById('total-boxes');
+                if (totalBoxesElement && !params.totalBoxes) {
+                    totalBoxesElement.textContent = `${totalBoxes} THÙNG (${totalQuantity})`;
+                }
+                
                 // Hiển thị sản phẩm đã gộp
                 mergedProducts.forEach(product => {
                     const productItem = document.createElement('div');
