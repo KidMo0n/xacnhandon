@@ -516,10 +516,13 @@
                     const productItem = document.createElement('div');
                     productItem.className = 'product-item';
                     
+                    const boxes = calculateBoxes(product.type, product.quantity);
+                    const qtyDisplay = boxes > 0 ? `${product.quantity} (${boxes} thùng)` : product.quantity;
+                    
                     productItem.innerHTML = `
                         <div data-type="${product.type}" title="${product.fullCode}">${product.shortCode}</div>
                         <div>${product.type}</div>
-                        <div>${product.quantity}</div>
+                        <div>${qtyDisplay}</div>
                         <div>${product.note}</div>
                     `;
                     productList.appendChild(productItem);
