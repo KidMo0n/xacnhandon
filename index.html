@@ -86,7 +86,7 @@
         
         .product-header {
             display: grid;
-            grid-template-columns: 2.5fr 1fr 2fr;
+            grid-template-columns: 2.5fr 1.2fr 2fr;
             gap: 10px;
             font-weight: bold;
             border-bottom: 2px solid #000;
@@ -110,7 +110,7 @@
         
         .product-item {
             display: grid;
-            grid-template-columns: 2.5fr 1fr 2fr;
+            grid-template-columns: 2.5fr 1.2fr 2fr;
             gap: 10px;
             padding: 10px 0;
             border-bottom: 1px solid #ddd;
@@ -128,11 +128,20 @@
         
         .product-item div:nth-child(3) {
             text-align: center;
+        }
+        
+        .product-item div:nth-child(3) .qty-main {
             font-weight: bold;
-            background: #e8e8e8;
-            padding: 4px 8px;
-            border-radius: 3px;
-            align-self: start;
+            font-size: 15px;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .product-item div:nth-child(3) .qty-boxes {
+            font-weight: normal;
+            font-size: 11px;
+            color: #666;
+            display: block;
         }
         
         .product-item div:nth-child(4) {
@@ -213,10 +222,10 @@
                 margin-bottom: 12px;
             }
             
-            /* Mobile: Layout 2 cột khổ ngang */
+            /* Mobile: Layout 3 cột khổ ngang */
             .product-header {
                 display: grid;
-                grid-template-columns: 2.5fr 1fr 2fr;
+                grid-template-columns: 2.5fr 1.2fr 2fr;
                 gap: 8px;
                 font-weight: bold;
                 border-bottom: 2px solid #000;
@@ -239,7 +248,7 @@
             
             .product-item {
                 display: grid;
-                grid-template-columns: 2.5fr 1fr 2fr;
+                grid-template-columns: 2.5fr 1.2fr 2fr;
                 gap: 8px;
                 padding: 6px 0;
                 border-bottom: 1px solid #ddd;
@@ -258,11 +267,20 @@
             
             .product-item div:nth-child(3) {
                 text-align: center;
+            }
+            
+            .product-item div:nth-child(3) .qty-main {
                 font-weight: bold;
-                background: #e8e8e8;
-                padding: 2px 4px;
-                border-radius: 3px;
-                align-self: start;
+                font-size: 13px;
+                display: block;
+                margin-bottom: 1px;
+            }
+            
+            .product-item div:nth-child(3) .qty-boxes {
+                font-weight: normal;
+                font-size: 9px;
+                color: #666;
+                display: block;
             }
             
             .product-item div:nth-child(4) {
