@@ -535,7 +535,9 @@
                     productItem.className = 'product-item';
                     
                     const boxes = calculateBoxes(product.type, product.quantity);
-                    const qtyDisplay = boxes > 0 ? `${product.quantity} (${boxes} thùng)` : product.quantity;
+                    const qtyDisplay = boxes > 0 
+                        ? `<span class="qty-main">${product.quantity}</span><span class="qty-boxes">${boxes} thùng</span>` 
+                        : `<span class="qty-main">${product.quantity}</span>`;
                     
                     productItem.innerHTML = `
                         <div data-type="${product.type}" title="${product.fullCode}">${product.shortCode}</div>
