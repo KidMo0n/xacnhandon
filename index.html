@@ -392,6 +392,18 @@
             return dateStr;
         }
         
+        function calculateBoxes(type, quantity) {
+            const qty = parseFloat(quantity) || 0;
+            const openBracket = type.indexOf('<');
+            const closeBracket = type.indexOf('>');
+            if (openBracket > -1 && closeBracket > openBracket) {
+                const divisor = parseFloat(type.substring(openBracket + 1, closeBracket));
+                if (!isNaN(divisor) && divisor > 0) return Math.round(qty / divisor);
+            }
+            if (type.toLowerCase().includes('cành')) return Math.round(qty / 50);
+            return Math.round(qty / 20);
+        }
+
         function displayOrderInfo() {
             const params = getUrlParams();
             
@@ -456,17 +468,7 @@
                 
                 const mergedProducts = [...productMap.values()];
                 
-                function calculateBoxes(type, quantity) {
-                    const qty = parseFloat(quantity) || 0;
-                    const openBracket = type.indexOf('<');
-                    const closeBracket = type.indexOf('>');
-                    if (openBracket > -1 && closeBracket > openBracket) {
-                        const divisor = parseFloat(type.substring(openBracket + 1, closeBracket));
-                        if (!isNaN(divisor) && divisor > 0) return Math.round(qty / divisor);
-                    }
-                    if (type.toLowerCase().includes('cành')) return Math.round(qty / 50);
-                    return Math.round(qty / 20);
-                }
+
                 
                 let totalBoxes = 0;
                 let totalQuantity = 0;
