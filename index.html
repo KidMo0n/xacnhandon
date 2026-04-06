@@ -512,6 +512,38 @@
             let text = buildShareTitle();
             if (boxes) text += `\n📦 ${boxes}`;
             if (delivery) text += `\n🚚 ${delivery}`;
+
+            // Thêm danh sách mã cây - loại (số lượng)
+            if (params.productCodes) {
+                const codes = params.productCodes.split(',');
+                const types = params.productTypes ? params.productTypes.split(',') : [];
+                const quantities = params.productQuantities ? params.productQuantities.split(',') : [];
+
+                const productMap = new Map();
+                const maxItems = Math.max(codes.length, types.length, quantities.length);
+                for (let i = 0; i < maxItems; i++) {
+                    const code = (codes[i] || '').trim();
+                    const shortCode = code.includes('-') ? code.split('-')[0].trim() : code;
+                    const type = (types[i] || '').trim();
+                    const qty = (quantities[i] || '').trim();
+                    const key = `${shortCode}|||${type}`;
+                    if (productMap.has(key)) {
+                        const ex = productMap.get(key);
+                        ex.quantity = ((parseFloat(ex.quantity) || 0) + (parseFloat(qty) || 0)).toString();
+                    } else {
+                        productMap.set(key, { shortCode, type, quantity: qty });
+                    }
+                }
+
+                text += '\n';
+                productMap.forEach(p => {
+                    const label = [p.shortCode, p.type].filter(Boolean).join(' - ');
+                    const boxes = calculateBoxes(p.type, p.quantity);
+                    const boxStr = boxes > 0 ? ` - ${boxes} thùng` : '';
+                    text += `\n🌿 ${label} (${p.quantity})${boxStr}`;
+                });
+            }
+
             return text;
         }
         
